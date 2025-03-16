@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Farming Companion</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.3/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Background Design */
+        body {
+            background: linear-gradient(to bottom, #E0F7FA, #1B5E20);
+            background-attachment: fixed;
+            font-family: 'Arial', sans-serif;
+            animation: subtleShift 30s infinite linear;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://www.transparenttextures.com/patterns/leaves.png'); /* Subtle leaf pattern */
+            background-repeat: repeat;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        @keyframes subtleShift {
+            0% {
+                background-position: 0% 0%;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+
+        /* Dashboard and Content Styling */
+        .dashboard {
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            backdrop-filter: blur(5px); /* Adds a blur effect for depth */
+        }
+
+        .rewards ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .rewards li {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background-color 0.3s ease;
+        }
+
+        .rewards li:hover {
+            background-color: #f7fafc;
+        }
+
+        .actions button {
+            background-color: #38a169;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 12px;
+            transition: background-color 0.3s ease;
+        }
+
+        .actions button:hover {
+            background-color: #2f855a;
+        }
+
+        .nav-link {
+            color: #ffffff;
+            font-weight: bold;
+            margin: 0 12px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #c6f6d5;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-form {
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(5px); /* Adds a blur effect for depth */
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-form input:focus {
+            border-color: #38a169;
+            outline: none;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            background-color: #38a169;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-form button:hover {
+            background-color: #2f855a;
+        }
+
+        .chatbox {
+            height: 400px;
+            overflow-y: auto;
+            background-color: rgba(247, 250, 252, 0.9); /* Semi-transparent light background */
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            backdrop-filter: blur(5px); /* Adds a blur effect for depth */
+        }
+
+        .chat-message {
+            max-width: 70%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .chat-message.user {
+            background-color: #38a169;
+            color: white;
+            margin-left: auto;
+        }
+
+        .chat-message.bot {
+            background-color: rgba(226, 232, 240, 0.9); /* Semi-transparent light gray */
+            color: #2d3748;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="login" class="login-container">
+        <div class="login-form">
+            <h2 class="text-2xl font-bold text-green-800 mb-6">Login</h2>
+            <input type="text" id="mobile-number" placeholder="Enter 10-digit Mobile Number" required>
+            <button onclick="login()">Login</button>
+        </div>
+    </div>
+
+    <!-- Main Content (Hidden Initially) -->
+    <div id="main-content" class="hidden">
+        <!-- Navigation Bar -->
+        <nav class="bg-green-800 p-4 text-white flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Eco Farming Companion</h1>
+            <div class="flex">
+                <div class="nav-link" onclick="showPage('home')">Home</div>
+                <div class="nav-link" onclick="showPage('use-me')">Use Me</div>
+                <div class="nav-link" onclick="showPage('about')">About Us</div>
+                <div class="nav-link" onclick="showPage('rewards')">Rewards</div>
+            </div>
+        </nav>
+
+        <!-- Home Page -->
+        <div id="home" class="page p-8">
+            <div class="dashboard">
+                <h2 class="text-2xl font-bold text-green-800 mb-6">Smart Fertilizing Dustbin</h2>
+                <div class="stats mb-6">
+                    <p class="text-green-600">Total Waste Disposed: <span id="total-waste" class="font-bold">0 kg</span></p>
+                    <p class="text-green-600">Points Earned: <span id="points-earned" class="font-bold">10</span></p>
+                    <p class="text-green-600">Rewards Available: <span id="rewards-available" class="font-bold">0</span></p>
+                </div>
+                <div class="actions">
+                    <button id="dispose-waste">Dispose Waste</button>
+                    <button id="claim-reward">Claim Reward</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Me Page (Chatbot) -->
+        <div id="use-me" class="page hidden p-8">
+            <div class="dashboard">
+                <h2 class="text-2xl font-bold text-green-800 mb-6">VARAHA IS HERE TO HELP YOU</h2>
+                <div id="chatbox" class="chatbox"></div>
+                <div class="flex flex-row my-5 items-center">
+                    <input
+                        class="shadow flex-grow rounded p-2 mr-2 text-black border border-gray-300 focus:border-green-500 focus:outline-none"
+                        id="messageInput"
+                        type="text"
+                        placeholder="Type your farming question..."
+                    />
+                    <button class="bg-green-500 rounded py-2 px-4 text-white font-bold hover:bg-green-600" id="sendButton">
+                        ASK YOUR DOUBT!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Us Page -->
+        <div id="about" class="page hidden p-8">
+            <div class="dashboard">
+                <h2 class="text-2xl font-bold text-green-800 mb-6">About Us</h2>
+                <p class="text-green-600">
+                    Welcome to GreenCycle, where sustainability and technology come together for a cleaner, greener future. We are committed to making waste management smarter and more eco-friendly with our innovative Smart Fertilizing Dustbin.
+                    <br><br>
+                    At GreenCycle, we recognize the importance of waste decomposition and recycling in preserving the environment. Our product, the Smart Fertilizing Dustbin, not only helps you manage waste more effectively but also contributes to sustainable farming by transforming organic waste into nutrient-rich fertilizer.
+                    <br><br>
+                    Join us in the mission to reduce waste, enrich the soil, and grow a healthier planet. Let’s create a cycle of sustainability with every action, every disposal, and every reward!
+                </p>
+            </div>
+        </div>
+
+        <!-- Rewards Page -->
+        <div id="rewards" class="page hidden p-8">
+            <div class="dashboard">
+                <h2 class="text-2xl font-bold text-green-800 mb-6">Rewards</h2>
+                <div class="rewards">
+                    <h3 class="text-xl font-bold text-green-800 mb-4">Available Rewards</h3>
+                    <ul id="rewards-list">
+                        <li>10 Points - Chocolate</li>
+                        <li>50 Points - 5% off in Organic Sweets and Foods Shop</li>
+                        <li>100 Points - 10% off in Recycled Clothes</li>
+                    </ul>
+                </div>
+                <div class="rewards mt-8">
+                    <h3 class="text-xl font-bold text-green-800 mb-4">Your Rewards</h3>
+                    <ul id="claimed-rewards-list">
+                        <!-- Claimed rewards will appear here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Login Logic
+        function login() {
+            const mobileNumber = document.getElementById('mobile-number').value;
+
+            // Check if the input is exactly 10 digits and numeric
+            if (/^\d{10}$/.test(mobileNumber)) {
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('main-content').classList.remove('hidden');
+                showPage('home');
+            } else {
+                alert('Please enter a valid 10-digit mobile number.');
+            }
+        }
+
+        // Navigation Logic
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+
+        // Initialize Login Page
+        document.getElementById('login').style.display = 'flex';
+
+        // Smart Fertilizing Dustbin Logic
+        let totalWaste = 0;
+        let pointsEarned = 10;  // Starting points set to 10
+        let rewardsAvailable = 0;
+        let claimedRewards = [];
+
+        const totalWasteElement = document.getElementById('total-waste');
+        const pointsEarnedElement = document.getElementById('points-earned');
+        const rewardsAvailableElement = document.getElementById('rewards-available');
+        const claimedRewardsList = document.getElementById('claimed-rewards-list');
+
+        document.getElementById('dispose-waste').addEventListener('click', () => {
+            totalWaste += 1;
+            pointsEarned += 10;  // Each waste disposal gives 10 points
+            rewardsAvailable = Math.floor(pointsEarned / 10);
+
+            totalWasteElement.textContent = `${totalWaste} kg`;
+            pointsEarnedElement.textContent = pointsEarned;
+            rewardsAvailableElement.textContent = rewardsAvailable;
+        });
+
+        // Function to update the claimed rewards list on the page
+        function updateClaimedRewards() {
+            claimedRewardsList.innerHTML = '';
+            claimedRewards.forEach(reward => {
+                const listItem = document.createElement('li');
+                listItem.textContent = reward;
+                claimedRewardsList.appendChild(listItem);
+            });
+        }
+
+        // Reward claim logic
+        document.getElementById('claim-reward').addEventListener('click', () => {
+            if (pointsEarned <= 10) {
+                alert('You do not have enough points to redeem a reward. You need to have minimum points of 20 in the balance');
+                return;
+            }
+
+            if (pointsEarned <= 50) {
+                // Automatically redeem for chocolates or 5% discount based on the available points
+                if (pointsEarned >= 50) {
+                    let userChoice = prompt('Do you want to claim chocolates or the 5% discount in Organic Sweets and Foods Shop? Type "chocolates" or "5%".');
+                    if (userChoice === null) {
+                        return; // If user cancels, do nothing
+                    }
+                    if (userChoice === '5%') {
+                        claimedRewards.push('5% off in Organic Sweets and Foods Shop');
+                        pointsEarned -= 50;
+                    } else if (userChoice === 'chocolates') {
+                        let chocolatesToClaim = Math.floor(pointsEarned / 10);
+                        for (let i = 0; i < chocolatesToClaim; i++) {
+                            claimedRewards.push('Chocolate');
+                        }
+                        pointsEarned -= chocolatesToClaim * 10;
+                    }
+                    rewardsAvailable = Math.floor(pointsEarned / 10);
+                    updateClaimedRewards();
+                    alert(`Reward claimed successfully!`);
+                } else {
+                    let chocolatesToClaim = Math.floor(pointsEarned / 10);
+                    for (let i = 0; i < chocolatesToClaim; i++) {
+                        claimedRewards.push('Chocolate');
+                    }
+                    pointsEarned -= chocolatesToClaim * 10;
+                    rewardsAvailable = Math.floor(pointsEarned / 10);
+                    updateClaimedRewards();
+                    alert(`You claimed ${chocolatesToClaim} Chocolate(s)!`);
+                }
+            } else {
+                // Ask user how many points they want to redeem if points are above 50
+                let pointsToRedeem = prompt(`You have ${pointsEarned} points. How many points would you like to redeem?`);
+
+                // Check if the user cancels the prompt
+                if (pointsToRedeem === null) {
+                    return; // Do nothing if user cancels
+                }
+
+                // Ensure pointsToRedeem is a valid number and within the available points
+                pointsToRedeem = parseInt(pointsToRedeem);
+
+                if (isNaN(pointsToRedeem) || pointsToRedeem <= 0) {
+                    alert('Invalid number of points. Please enter a positive number.');
+                    return;
+                }
+                if (pointsToRedeem > pointsEarned) {
+                    alert('You dont have enough points');
+                    return;
+                }
+
+                // Deduct points and claim rewards
+                if (pointsToRedeem <= 40) {
+                    let chocolatesToClaim = Math.floor(pointsToRedeem / 10);
+                    for (let i = 0; i < chocolatesToClaim; i++) {
+                        claimedRewards.push('Chocolate');
+                    }
+                    pointsEarned -= chocolatesToClaim * 10;
+                    rewardsAvailable = Math.floor(pointsEarned / 10);
+                    updateClaimedRewards();
+                    alert(`You claimed ${chocolatesToClaim} Chocolate(s)!`);
+                } else if (pointsToRedeem <= 90) {
+                    let userChoice = prompt('Do you want to claim chocolates or the 5% discount in Organic Sweets and Foods Shop? Type "chocolates" or "5%".');
+                    if (userChoice === null) {
+                        return; // If user cancels, do nothing
+                    }
+                    if (userChoice === '5%') {
+                        claimedRewards.push('5% off in Organic Sweets and Foods Shop');
+                        pointsEarned -= 50;
+                    } else if (userChoice === 'chocolates') {
+                        let chocolatesToClaim = Math.floor(pointsToRedeem / 10);
+                        for (let i = 0; i < chocolatesToClaim; i++) {
+                            claimedRewards.push('Chocolate');
+                        }
+                        pointsEarned -= chocolatesToClaim * 10;
+                    }
+                    rewardsAvailable = Math.floor(pointsEarned / 10);
+                    updateClaimedRewards();
+                    alert(`Reward claimed successfully!`);
+                } else if (pointsToRedeem >= 100) {
+                    let userChoice = prompt('Do you want to claim chocolates or the 10% discount in Recycled Clothes? Type "chocolates" or "10%".');
+                    if (userChoice === null) {
+                        return; // If user cancels, do nothing
+                    }
+                    if (userChoice === '10%') {
+                        claimedRewards.push('10% off in Recycled Clothes');
+                        pointsEarned -= 100;
+                    } else if (userChoice === 'chocolates') {
+                        let chocolatesToClaim = Math.floor(pointsToRedeem / 10);
+                        for (let i = 0; i < chocolatesToClaim; i++) {
+                            claimedRewards.push('Chocolate');
+                        }
+                        pointsEarned -= chocolatesToClaim * 10;
+                    }
+                    rewardsAvailable = Math.floor(pointsEarned / 10);
+                    updateClaimedRewards();
+                    alert(`Reward claimed successfully!`);
+                }
+            }
+
+            // Update points and rewards display
+            pointsEarnedElement.textContent = pointsEarned;
+            rewardsAvailableElement.textContent = Math.floor(pointsEarned / 10);
+            updateClaimedRewards();
+            alert('Reward claimed successfully!');
+        });
+
+           // Chatbot Logic
+        const chatbox = document.getElementById("chatbox");
+        const messageInput = document.getElementById("messageInput");
+        const sendButton = document.getElementById("sendButton");
+        const chatId = crypto.randomUUID();
+        
+        let receiving = false;
+        const systemPrompt = "You are a knowledgeable and patient agricultural expert guiding beginners through farming challenges and questions with understanding and expertise.";
+        
+        function createMessageElement(text, alignment) {
+            const messageElement = document.createElement("div");
+            messageElement.className = `chat-message ${alignment === "left" ? "bot" : "user"}`;
+            messageElement.textContent = text;
+            return messageElement;
+        }
+        
+        function connectWebSocket(message) {
+            receiving = true;
+            const url = "wss://backend.buildpicoapps.com/api/chatbot/chat";
+            const websocket = new WebSocket(url);
+            
+            websocket.addEventListener("open", () => {
+                websocket.send(
+                    JSON.stringify({
+                        chatId: chatId,
+                        appId: "economy-million",
+                        systemPrompt: systemPrompt,
+                        message: message,
+                    })
+                );
+            });
+            
+            const messageElement = createMessageElement("", "left");
+            chatbox.appendChild(messageElement);
+            
+            websocket.onmessage = (event) => {
+                messageElement.innerText += event.data;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            };
+            
+            websocket.onclose = (event) => {
+                if (event.code === 1000) {
+                    receiving = false;
+                } else {
+                    messageElement.textContent += "Error getting response from server. Refresh the page and try again.";
+                    chatbox.scrollTop = chatbox.scrollHeight;
+                    receiving = false;
+                }
+            };
+        }
+        
+        sendButton.addEventListener("click", () => {
+            if (!receiving && messageInput.value.trim() !== "") {
+                const messageText = messageInput.value.trim();
+                messageInput.value = "";
+                const messageElement = createMessageElement(messageText, "right");
+                chatbox.appendChild(messageElement);
+                chatbox.scrollTop = chatbox.scrollHeight;
+                
+                connectWebSocket(messageText);
+            }
+        });
+        
+        messageInput.addEventListener("keydown", (event) => {
+            if (
+                event.key === "Enter" &&
+                !receiving &&
+                messageInput.value.trim() !== ""
+            ) {
+                event.preventDefault();
+                sendButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
